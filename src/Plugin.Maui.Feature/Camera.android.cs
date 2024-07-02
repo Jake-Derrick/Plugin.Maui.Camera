@@ -10,49 +10,52 @@ using Plugin.Maui.Camera.Mappings;
 
 namespace Plugin.Maui.Camera;
 
-public partial class CameraHandler : ViewHandler<CameraView, PreviewView>, ICamera
+public partial class CameraHandler : ViewHandler<CameraView, PreviewView>
 {
     private PreviewView _previewView;
     private ProcessCameraProvider _cameraProvider;
+    private ILifecycleOwner _lifecycleOwner;
+    private CameraSelector _cameraSelector;
     private AndroidX.Camera.Core.ICamera _camera;
+    private ImageCapture _imageCapture;
+    private Preview _preview;
 
     protected override PreviewView CreatePlatformView()
     {
-        _previewView = new PreviewView(Context)
-        {
-            LayoutParameters = new(Android.Views.ViewGroup.LayoutParams.MatchParent, Android.Views.ViewGroup.LayoutParams.MatchParent)
-        };
+        CreateCameraPreview();
+        _lifecycleOwner = Context as ILifecycleOwner;
+        StartCameraPreview();
         return _previewView;
     }
 
-    public async Task StartCameraPreview(CameraDirection cameraDirection = CameraDirection.Back)
+    public async Task StartCameraPreview(CameraDirection cameraDirection = CameraDirection.Back) // TODO: rename this to StartCamera
     {
         var cameraProviderFuture = ProcessCameraProvider.GetInstance(Context);
 
         cameraProviderFuture.AddListener(new Runnable(() =>
         {
             _cameraProvider = cameraProviderFuture.Get().JavaCast<ProcessCameraProvider>();
-            var preview = new Preview.Builder().Build();
-
-            preview.SetSurfaceProvider(_previewView.SurfaceProvider);
-
-            var cameraSelector = new CameraSelector.Builder()
+            _cameraSelector = new CameraSelector.Builder()
                 .RequireLensFacing(cameraDirection.ToAndroid())
                 .Build();
 
-            var lifecycleOwner = Context as ILifecycleOwner;
+            SetupPreview();
+            SetupImageCapture();
 
             _cameraProvider.UnbindAll();
-            _camera = _cameraProvider.BindToLifecycle(lifecycleOwner, cameraSelector, preview);
+            _camera = _cameraProvider.BindToLifecycle(_lifecycleOwner, _cameraSelector, _preview, _imageCapture);
         }), ContextCompat.GetMainExecutor(Context));
     }
 
     public async Task ChangeCameraDirection(CameraDirection direction) => await StartCameraPreview(direction);
 
+    public void SetFlash(Flash flash) => _imageCapture.FlashMode = GetFlash(flash);
+    private int GetFlash(Flash flash) => _camera.CameraInfo.HasFlashUnit ? flash.ToAndroid() : ImageCapture.FlashModeOff;
+
     protected override void ConnectHandler(PreviewView nativeView)
     {
         base.ConnectHandler(nativeView);
-        StartCameraPreview();
+        SetupPreview();
     }
 
     protected override void DisconnectHandler(PreviewView platformView)

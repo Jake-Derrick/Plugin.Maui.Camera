@@ -5,13 +5,9 @@
 /// </summary>
 public interface ICamera
 {
-    /// <summary>
-    /// Starts the camera
-    /// </summary>
-    Task StartCameraPreview(CameraDirection cameraDirection = CameraDirection.Back);
+    CameraDirection CameraDirection { get; set; }
 
-    /// <summary>
-    /// Changes the camera direction
-    /// </summary>
-    Task ChangeCameraDirection(CameraDirection direction);
+    Task<byte[]> TakePhoto();
+
+    Flash Flash { get; set; }
 }

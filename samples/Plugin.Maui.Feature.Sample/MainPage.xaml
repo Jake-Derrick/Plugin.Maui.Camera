@@ -5,9 +5,13 @@
              x:Class="Plugin.Maui.Camera.Sample.MainPage"
              Title="Camera Plugin">
 
-    <VerticalStackLayout HeightRequest="800" WidthRequest="600">
-        <camera:CameraView x:Name="CameraPreview" HeightRequest="300" WidthRequest="300" />
-        <Button Clicked="Button_Clicked"/>
-    </VerticalStackLayout>
-    
+    <ScrollView>
+        <VerticalStackLayout>
+            <camera:CameraView x:Name="CameraPreview" />
+            <Button Text="Flip camera" Clicked="Button_Clicked" />
+            <Button Text="ChangeFlash" Clicked="ChangeFlash" />
+            <Button Text="Take Picture" Clicked="TakePicture" />
+            <Image x:Name="DisplayImage" />
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

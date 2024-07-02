@@ -13,4 +13,12 @@ internal static class Mappings
         CameraDirection.Front => CameraSelector.LensFacingFront,
         _ => CameraSelector.LensFacingUnknown
     };
+
+    internal static int ToAndroid(this Flash flash) => flash switch
+    {
+        Flash.Off => ImageCapture.FlashModeOff,
+        Flash.On => ImageCapture.FlashModeOn,
+        Flash.Auto => ImageCapture.FlashModeAuto,
+        _ => ImageCapture.FlashModeOff
+    };
 }
