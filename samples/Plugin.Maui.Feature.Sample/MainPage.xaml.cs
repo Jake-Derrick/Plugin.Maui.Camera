@@ -1,15 +1,20 @@
-﻿using Plugin.Maui.Feature;
-
-namespace Plugin.Maui.Feature.Sample;
+﻿namespace Plugin.Maui.Camera.Sample;
 
 public partial class MainPage : ContentPage
 {
-	readonly IFeature feature;
+    public MainPage()
+    {
+        InitializeComponent();
+        RequestPermissions();
+    }
 
-	public MainPage(IFeature feature)
-	{
-		InitializeComponent();
-		
-		this.feature = feature;
-	}
+    private async void RequestPermissions()
+    {
+        await Permissions.RequestAsync<Permissions.Camera>();
+    }
+
+    private void Button_Clicked(object sender, EventArgs e)
+    {
+        CameraPreview.CameraDirection = CameraPreview.CameraDirection == CameraDirection.Front ? CameraDirection.Back : CameraDirection.Front;
+    }
 }

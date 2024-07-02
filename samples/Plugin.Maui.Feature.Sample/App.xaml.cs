@@ -1,4 +1,4 @@
-﻿namespace Plugin.Maui.Feature.Sample;
+﻿namespace Plugin.Maui.Camera.Sample;
 
 public partial class App : Application
 {

@@ -17,19 +17,19 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 
 		<!-- NuGet -->
-		<Authors>author</Authors>
-		<Copyright>Copyright © author and contributors</Copyright>
+		<Authors>Jake-Derrick</Authors>
+		<Copyright>Copyright © Jake-Derrick and contributors</Copyright>
 		<IsPackable>True</IsPackable>
-		<PackageProjectUrl>https://github.com/jfversluis/Plugin.Maui.Feature</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/jfversluis/Plugin.Maui.Feature</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/Jake-Derrick/Plugin.Maui.Camera</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Jake-Derrick/Plugin.Maui.Camera</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageTags>dotnet-maui;maui;plugin;</PackageTags>
+		<PackageTags>dotnet-maui;maui;plugin;camera;picture</PackageTags>
 		<IncludeSymbols>True</IncludeSymbols>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<Title>.NET MAUI Feature Plugin</Title>
-		<Description>Plugin.Maui.Feature provides the ability to do this amazing thing in your .NET MAUI application.</Description>
+		<Title>.NET MAUI Camera Plugin</Title>
+		<Description>Plugin.Maui.Camera provides the ability to capture images and videos.</Description>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<DebugType>portable</DebugType>
@@ -70,15 +70,28 @@
 	</ItemGroup>
 
 	<ItemGroup>
+    <!--Shared-->
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="all" IsImplicitlyDefined="true" />
 		<PackageReference Include="System.Management" Version="7.0.0" Condition="$(TargetFramework.Contains('-windows')) == true" />
+    
+    <!--Android Specific-->
+    <PackageReference Include="Xamarin.AndroidX.Collection" Version="1.4.0.5" Condition="$(TargetFramework.Contains('-android')) == true" />
+    <PackageReference Include="Xamarin.AndroidX.Collection.Jvm" Version="1.4.0.4" Condition="$(TargetFramework.Contains('-android')) == true" />
+    <PackageReference Include="Xamarin.AndroidX.Collection.Ktx" Version="1.4.0.4" Condition="$(TargetFramework.Contains('-android')) == true" />
+
+    <PackageReference Include="Xamarin.AndroidX.Activity" Version="1.9.0.3" Condition="$(TargetFramework.Contains('-android')) == true" />
+    <PackageReference Include="Xamarin.AndroidX.Activity.Ktx" Version="1.9.0.3" Condition="$(TargetFramework.Contains('-android')) == true" />
+
+    <PackageReference Include="Xamarin.AndroidX.Camera.Camera2" Version="1.3.3.2" Condition="$(TargetFramework.Contains('-android')) == true" />
+    <PackageReference Include="Xamarin.AndroidX.Camera.Lifecycle" Version="1.3.3.2" Condition="$(TargetFramework.Contains('-android')) == true" />
+    <PackageReference Include="Xamarin.AndroidX.Camera.View" Version="1.3.3.2" Condition="$(TargetFramework.Contains('-android')) == true" />
 	</ItemGroup>
 
 	<!-- Package additions -->
 	<ItemGroup>
 		<None Include="..\..\nuget.png" PackagePath="icon.png" Pack="true" />
-		<None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+		<None Include="..\..\README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 </Project>
