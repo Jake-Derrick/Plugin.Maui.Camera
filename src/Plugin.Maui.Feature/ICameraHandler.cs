@@ -2,11 +2,17 @@
 
 public interface ICameraHandler
 {
-    Task StartCameraPreview(CameraDirection cameraDirection = CameraDirection.Back);
+    void StartCamera();
 
-    Task ChangeCameraDirection(CameraDirection direction);
+    void ChangeCameraDirection(CameraDirection direction);
 
     Task<byte[]> TakePhoto();
 
     void SetFlash(Flash flash);
+
+    void StartVideo(string fileName);
+    void PauseVideo();
+    void ResumeVideo();
+    void StopVideo();
+    void MuteVideo(bool shouldMute);
 }

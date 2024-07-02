@@ -1,10 +1,12 @@
 ﻿using AndroidX.Camera.Core;
 using AndroidX.Camera.Lifecycle;
+using AndroidX.Camera.Video;
 using AndroidX.Camera.View;
 using AndroidX.Core.Content;
 using AndroidX.Lifecycle;
 using Java.Interop;
 using Java.Lang;
+using Java.Util.Concurrent;
 using Microsoft.Maui.Handlers;
 using Plugin.Maui.Camera.Mappings;
 
@@ -17,18 +19,23 @@ public partial class CameraHandler : ViewHandler<CameraView, PreviewView>
     private ILifecycleOwner _lifecycleOwner;
     private CameraSelector _cameraSelector;
     private AndroidX.Camera.Core.ICamera _camera;
-    private ImageCapture _imageCapture;
+    private IExecutor _mainExecutor;
+
+    // Camera use cases
     private Preview _preview;
+    private ImageCapture _imageCapture;
+    private VideoCapture _videoCapture;
 
     protected override PreviewView CreatePlatformView()
     {
         CreateCameraPreview();
         _lifecycleOwner = Context as ILifecycleOwner;
-        StartCameraPreview();
+        _mainExecutor = ContextCompat.GetMainExecutor(Context);
+        StartCamera();
         return _previewView;
     }
 
-    public async Task StartCameraPreview(CameraDirection cameraDirection = CameraDirection.Back) // TODO: rename this to StartCamera
+    public void StartCamera()
     {
         var cameraProviderFuture = ProcessCameraProvider.GetInstance(Context);
 
@@ -36,18 +43,30 @@ public partial class CameraHandler : ViewHandler<CameraView, PreviewView>
         {
             _cameraProvider = cameraProviderFuture.Get().JavaCast<ProcessCameraProvider>();
             _cameraSelector = new CameraSelector.Builder()
-                .RequireLensFacing(cameraDirection.ToAndroid())
+                .RequireLensFacing(VirtualView.CameraDirection.ToAndroid())
                 .Build();
 
             SetupPreview();
-            SetupImageCapture();
+            List<UseCase> useCases = [_preview];
+
+            if (VirtualView.UsageConfiguration.UsePicture)
+            {
+                SetupImageCapture();
+                useCases.Add(_imageCapture);
+            }
+
+            if (VirtualView.UsageConfiguration.UseVideo)
+            {
+                SetupVideoCapture();
+                useCases.Add(_videoCapture);
+            }
 
             _cameraProvider.UnbindAll();
-            _camera = _cameraProvider.BindToLifecycle(_lifecycleOwner, _cameraSelector, _preview, _imageCapture);
-        }), ContextCompat.GetMainExecutor(Context));
+            _camera = _cameraProvider.BindToLifecycle(_lifecycleOwner, _cameraSelector, useCases.ToArray());
+        }), _mainExecutor);
     }
 
-    public async Task ChangeCameraDirection(CameraDirection direction) => await StartCameraPreview(direction);
+    public void ChangeCameraDirection(CameraDirection direction) => StartCamera();
 
     public void SetFlash(Flash flash) => _imageCapture.FlashMode = GetFlash(flash);
     private int GetFlash(Flash flash) => _camera.CameraInfo.HasFlashUnit ? flash.ToAndroid() : ImageCapture.FlashModeOff;

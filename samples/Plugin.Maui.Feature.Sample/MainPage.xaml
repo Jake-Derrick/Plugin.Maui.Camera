@@ -7,10 +7,12 @@
 
     <ScrollView>
         <VerticalStackLayout>
-            <camera:CameraView x:Name="CameraPreview" />
+            <camera:CameraView x:Name="Camera" />
             <Button Text="Flip camera" Clicked="Button_Clicked" />
             <Button Text="ChangeFlash" Clicked="ChangeFlash" />
             <Button Text="Take Picture" Clicked="TakePicture" />
+            <Button Text="Start/Stop Video" Clicked="StartVideo" />
+
             <Image x:Name="DisplayImage" />
         </VerticalStackLayout>
     </ScrollView>

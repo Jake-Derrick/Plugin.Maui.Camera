@@ -1,5 +1,4 @@
 ﻿using AndroidX.Camera.Core;
-using AndroidX.Core.Content;
 using Plugin.Maui.Camera.Mappings;
 using static AndroidX.Camera.Core.ImageCapture;
 
@@ -13,7 +12,7 @@ public partial class CameraHandler
     {
         var tcs = new TaskCompletionSource<byte[]>();
         _imageCapture.TargetRotation = (int)_previewView.Display.Rotation; // Might need some work here to get proper rotation when app/device is portrait locked. _camera.CameraInfo.GetSensorRotationDegrees()?
-        _imageCapture.TakePicture(ContextCompat.GetMainExecutor(Context), new ImageCaptureCallback(tcs.SetResult));
+        _imageCapture.TakePicture(_mainExecutor, new ImageCaptureCallback(tcs.SetResult));
         return await tcs.Task;
     }
 
